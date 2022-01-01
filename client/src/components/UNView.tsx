@@ -3,9 +3,9 @@ import React, {useEffect, useState, useRef} from 'react';
 import MusicXML from 'musicxml-interfaces';
 import {parse} from '../parser/MusicXML';
 import {Score} from '../parser/Types';
-import TraditionalRender from '../notations/TraditionalRender';
-import SNViewRender from '../notations/SNViewRender';
-import SolfegeRender from '../notations/SolfegeRender';
+import TraditionalRender from '../notations/Traditional';
+import SimplifiedRender from '../notations/Simplified';
+import SolfegeRender from '../notations/Solfege';
 import { usePreferencesState} from '../contexts/Preferences';
 import {useDialogState} from '../contexts/Dialog';
 import * as Dialog from '../util/Dialog';
@@ -83,7 +83,7 @@ const UNView: React.FC<Props> = ({ xml, forcedWidth, editMode = '', editCallback
             case "Traditional":
                 return TraditionalRender(score, width, xml, ref)
             case "SNview":
-                return SNViewRender(score, width, xml, ref)
+                return SimplifiedRender(score, width, xml, ref)
             case "Solfege":
                 return SolfegeRender(score, width, xml, ref)
             default:
