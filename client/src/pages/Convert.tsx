@@ -1,7 +1,6 @@
 import React, {useEffect, useState, CSSProperties, Fragment} from 'react';
 import {RouteComponentProps, navigate} from "@reach/router";
 import SNView from '../components/SNView';
-import SNView2 from '../components/SNView2';
 import UNView from '../components/UNView';
 import Frame from '../components/Frame';
 import Expandable from '../components/Expandable';
@@ -380,58 +379,20 @@ const Convert: React.FC<Props> = () => {
 
             </div>
             <div style={styles.SNView} onClick={() => {setShow(false);}}>
-                {/*
-                    Could allow selecting a new notation here, in which case
-                    each notation needs to create a new JSX element. I don't
-                    think this is the right place for the standard interface,
-                    because the xml has not even been parsed yet.
-                */}
-                {/* Use a function here () so I can use a switch statement for selecting the AN*/}
-
                 {currentFile.data === undefined ? null :
-                    ( () => {
-                        switch (preferences.notation) {
-                            case "Traditional":
-                                return (<div>Traditional notation not working yet</div>)
-                            case "SNview":
-                                return (<SNView xml={currentFile.data} editMode={editMode} editCallback={
-                                    ()=>{
-                                        try {
-                                            localStorage.setItem(currentFile.id!, JSON.stringify(currentFile.data));
-                                        } catch(e){}
-                                    }
-                                } />)
-                            // Testing a 2nd notation
-                            case "SNview2":
-                                return (<SNView2 xml={currentFile.data} editMode={editMode} editCallback={
-                                    ()=>{
-                                        try {
-                                            localStorage.setItem(currentFile.id!, JSON.stringify(currentFile.data));
-                                        } catch(e){}
-                                    }
-                                } />)
-                            // I believe there should be a single JSX react element that
-                            // parses the xml then chooses the output notation.
-                            // Should not choose the notation here...
-                            case "UNview":
-                                return (<UNView xml={currentFile.data} editMode={editMode} editCallback={
-                                    ()=>{
-                                        try {
-                                            localStorage.setItem(currentFile.id!, JSON.stringify(currentFile.data));
-                                        } catch(e){}
-                                    }
-                                } />)
-
-                            default:
-                                return (<div>Sorry, I don't recognize your selected notation.</div>)
+                    (<UNView xml={currentFile.data} editMode={editMode} editCallback={
+                        ()=>{
+                            try {
+                                localStorage.setItem(currentFile.id!, JSON.stringify(currentFile.data));
+                            } catch(e){}
                         }
-                    })()
+                    } />)
                 }
             </div>
 
             <div id="hidden-pdf-generation" style={styles.hidden}>
                 <canvas className="canvas" width={1000} height={1000} />
-                {currentFile.data === undefined ? null : <SNView xml={currentFile.data} forcedWidth={1000} />}
+                {currentFile.data === undefined ? null : <UNView xml={currentFile.data} forcedWidth={1000} />}
             </div>
 
         </Frame>

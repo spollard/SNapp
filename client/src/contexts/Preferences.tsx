@@ -1,7 +1,7 @@
 import React, {createContext, useContext, useReducer, useRef} from "react";
 
 
-export const notationOptions = ['Traditional', 'SNview', 'SNview2', 'UNview'] as const;
+export const notationOptions = ['Traditional', 'SNview', 'Solfege'] as const;
 export type notationOption = (typeof notationOptions)[number];
 
 export const colorPreferenceStyles = {
@@ -68,7 +68,7 @@ export type action = {
 };
 
 let initialState: state = {
-    notation: "UNview",
+    notation: "Solfege",
     noteDurationColor: "grey",
     noteSymbolColor: "black",
     staffScale: 'medium',
