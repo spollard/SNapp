@@ -1,5 +1,9 @@
 import React, {createContext, useContext, useReducer, useRef} from "react";
 
+
+export const notationOptions = ['Traditional', 'SNview', 'SNview2'] as const;
+export type notationOption = (typeof notationOptions)[number];
+
 export const colorPreferenceStyles = {
     black: "#000000",
     grey: "#777777",
@@ -21,13 +25,13 @@ export type scalePreferenceOption = (typeof scalePreferenceOptions)[number];
 export const spacingPreferenceOptions = ['narrow', 'moderate', 'wide'] as const;
 export type spacingPreferenceOption = (typeof spacingPreferenceOptions)[number];
 
-export const naturalNoteHeadPreferenceOptions = ["●", "○"] as const; 
+export const naturalNoteHeadPreferenceOptions = ["●", "○"] as const;
 export type naturalNoteHeadPreferenceOption = (typeof naturalNoteHeadPreferenceOptions)[number];
 
 export const sharpNoteHeadPreferenceOptions = ["▲", "△", "#"] as const;
 export type sharpNoteHeadPreferenceOption = (typeof sharpNoteHeadPreferenceOptions)[number];
 
-export const flatNoteHeadPreferenceOptions = ["▼", "▽", "b"] as const; 
+export const flatNoteHeadPreferenceOptions = ["▼", "▽", "b"] as const;
 export type flatNoteHeadPreferenceOption = (typeof flatNoteHeadPreferenceOptions)[number];
 
 export const clefPreferenceOptions = ["WYSIWYP","Traditional"] as const;
@@ -43,6 +47,7 @@ export const lyricsFontSizeOptions = ['small', 'medium', 'large'] as const;
 export type lyricsFontSizeOption = (typeof lyricsFontSizeOptions)[number];
 
 export type state = {
+    notation: notationOption;
     noteDurationColor: colorPreferenceOption;
     noteSymbolColor: colorPreferenceOption;
     staffScale: scalePreferenceOption;
@@ -63,6 +68,7 @@ export type action = {
 };
 
 let initialState: state = {
+    notation: "SNview",
     noteDurationColor: "grey",
     noteSymbolColor: "black",
     staffScale: 'medium',

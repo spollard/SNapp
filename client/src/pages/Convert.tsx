@@ -1,6 +1,7 @@
 import React, {useEffect, useState, CSSProperties, Fragment} from 'react';
 import {RouteComponentProps, navigate} from "@reach/router";
 import SNView from '../components/SNView';
+import SNView2 from '../components/SNView2';
 import Frame from '../components/Frame';
 import Expandable from '../components/Expandable';
 import {saveAs} from 'file-saver';
@@ -8,7 +9,7 @@ import {useCurrentFileState} from '../contexts/CurrentFile';
 import MusicXML from 'musicxml-interfaces';
 import {
     usePreferencesState, scalePreferenceOptions,
-    spacingPreferenceOptions, naturalNoteHeadPreferenceOptions, sharpNoteHeadPreferenceOptions, flatNoteHeadPreferenceOptions, measuresPerRowOptions,
+    notationOptions, spacingPreferenceOptions, naturalNoteHeadPreferenceOptions, sharpNoteHeadPreferenceOptions, flatNoteHeadPreferenceOptions, measuresPerRowOptions,
     accidentalTypeOptions, clefPreferenceOptions, lyricsFontSizeOptions
 } from '../contexts/Preferences';
 import jsPDF from 'jspdf';
@@ -31,7 +32,7 @@ const Convert: React.FC<Props> = () => {
     let [currentFile, setCurrentFile] = useCurrentFileState();
     // let [, setDialogState] = useDialogState();
 
-    
+
 
     // let showError = (error: string)=>{
     //     setDialogState(Dialog.showMessage('An Error Occurred',error,'Close',()=>{
@@ -222,15 +223,25 @@ const Convert: React.FC<Props> = () => {
                         </div>
 
                     </Expandable>
-                                      
-                    
-                        
+
+
+
                         _________________________________________________
-                      Changes are made to the converted music file. To save in MusicXML format, select Export after editing. 
-                    
+                      Changes are made to the converted music file. To save in MusicXML format, select Export after editing.
+
 
                 </Fragment>:<Fragment key="preferences">
 
+                    <Expandable title="Notation">
+
+                        <div style={styles.line}>
+                            <div style={styles.name}>Notation</div>
+                            <select value={preferences.notation} onChange={
+                                (e) => {setPreferences({type: 'set', val: {notation: e.target.value as any}});}
+                            }>{notationOptions.map(x => <option key={x}>{x}</option>)}</select>
+                        </div>
+
+                    </Expandable>
                     <Expandable title="Staff Appearance">
 
                         <div style={styles.line}>
@@ -364,15 +375,35 @@ const Convert: React.FC<Props> = () => {
                 </>}
 
 
-                    
+
 
             </div>
             <div style={styles.SNView} onClick={() => {setShow(false);}}>
-                {currentFile.data === undefined ? null : <SNView xml={currentFile.data} editMode={editMode} editCallback={()=>{
-                    try {
-                        localStorage.setItem(currentFile.id!, JSON.stringify(currentFile.data));
-                    } catch(e){}
-                }} />}
+                {/* Use a function here () so I can use a switch statement for selecting the AN*/}
+                {currentFile.data === undefined ? null :
+                    ( () => {
+                        switch (preferences.notation) {
+                            case "SNview":
+                                return (<SNView xml={currentFile.data} editMode={editMode} editCallback={
+                                    ()=>{
+                                        try {
+                                            localStorage.setItem(currentFile.id!, JSON.stringify(currentFile.data));
+                                        } catch(e){}
+                                    }
+                                } />)
+                            case "SNview2":
+                                return (<SNView2 xml={currentFile.data} editMode={editMode} editCallback={
+                                    ()=>{
+                                        try {
+                                            localStorage.setItem(currentFile.id!, JSON.stringify(currentFile.data));
+                                        } catch(e){}
+                                    }
+                                } />)
+                            default:
+                                return (<div>Traditional notation not working yet</div>)
+                        }
+                    })()
+                }
             </div>
 
             <div id="hidden-pdf-generation" style={styles.hidden}>
