@@ -1,7 +1,7 @@
 import React, {createContext, useContext, useReducer, useRef} from "react";
 
 
-export const notationOptions = ['Traditional', 'SNview', 'Solfege'] as const;
+export const notationOptions = ['Traditional', 'Simplified', 'Solfege'] as const;
 export type notationOption = (typeof notationOptions)[number];
 
 export const colorPreferenceStyles = {

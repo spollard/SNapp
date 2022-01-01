@@ -82,7 +82,7 @@ const UNView: React.FC<Props> = ({ xml, forcedWidth, editMode = '', editCallback
         switch (preferences.notation) {
             case "Traditional":
                 return TraditionalRender(score, width, xml, ref)
-            case "SNview":
+            case "Simplified":
                 return SimplifiedRender(score, width, xml, ref)
             case "Solfege":
                 return SolfegeRender(score, width, xml, ref)
