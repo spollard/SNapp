@@ -61,7 +61,7 @@ const keySignatureNamesArrayMinor = [
 let creditsDisplay = ['', '', '', '', ''];
 
 
-function SolfegeRender(score: Score, width: number, xml: MusicXML.ScoreTimewise, ref: any, editMode: '' | 'fingerings'='') {
+function Solfege(score: Score, width: number, xml: MusicXML.ScoreTimewise, ref: any, editMode: '' | 'fingerings'='') {
     let [preferences,] = usePreferencesState();
 
     let [dialogState, setDialogState] = useDialogState();
@@ -742,4 +742,4 @@ function SolfegeRender(score: Score, width: number, xml: MusicXML.ScoreTimewise,
     );
 }
 
-export default SolfegeRender;
+export default Solfege;

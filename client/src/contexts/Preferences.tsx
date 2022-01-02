@@ -1,7 +1,16 @@
 import React, {createContext, useContext, useReducer, useRef} from "react";
 
+// CANNOT IMPORT HERE. WHY!??!?
+// Notations ends up being undefined for some reason.... STUPID TYPESCRIPT
+//~ import Notations from "../notations/All"
 
-export const notationOptions = ['Traditional', 'Simplified', 'Solfege'] as const;
+//~ console.log("NOtations in preferences", Notations)
+//~ console.log("NOtations", Object.keys({a:"a",b:"b"}))
+//~ console.log("NOtations", Object.keys(Notations))
+//~ export const notationOptions = Object.keys(Notations) as (keyof typeof Notations)[];
+
+// Add the name of your notation here
+export const notationOptions = ["Traditional", "Simplified", "Solfege"] as const;
 export type notationOption = (typeof notationOptions)[number];
 
 export const colorPreferenceStyles = {

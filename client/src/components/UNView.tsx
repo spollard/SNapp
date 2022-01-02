@@ -3,9 +3,7 @@ import React, {useEffect, useState, useRef} from 'react';
 import MusicXML from 'musicxml-interfaces';
 import {parse} from '../parser/MusicXML';
 import {Score} from '../parser/Types';
-import TraditionalRender from '../notations/Traditional';
-import SimplifiedRender from '../notations/Simplified';
-import SolfegeRender from '../notations/Solfege';
+import Notations from '../notations/All';
 import { usePreferencesState} from '../contexts/Preferences';
 import {useDialogState} from '../contexts/Dialog';
 import * as Dialog from '../util/Dialog';
@@ -77,20 +75,13 @@ const UNView: React.FC<Props> = ({ xml, forcedWidth, editMode = '', editCallback
         return <div ref={ref}></div>;
     }
 
+
     // Try catch is good for production
     //~ try {
-        switch (preferences.notation) {
-            case "Traditional":
-                return TraditionalRender(score, width, xml, ref)
-            case "Simplified":
-                return SimplifiedRender(score, width, xml, ref)
-            case "Solfege":
-                return SolfegeRender(score, width, xml, ref)
-            default:
-                return (<div>I don't recognize your selected notation</div>)
-        }
-
-
+        if (preferences.notation in Notations)
+            return Notations[preferences.notation](score, width, xml, ref)
+        else
+            return (<div>I don't recognize your selected notation</div>)
     //~ } catch (e) {
         //~ console.error(e);
         //~ if (!dialogState.shown) {

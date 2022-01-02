@@ -61,7 +61,7 @@ const keySignatureNamesArrayMinor = [
 let creditsDisplay = ['', '', '', '', ''];
 
 
-function TraditionalRender(score: Score, width: number, xml: MusicXML.ScoreTimewise, ref: any, editMode: '' | 'fingerings'='') {
+function Traditional(score: Score, width: number, xml: MusicXML.ScoreTimewise, ref: any, editMode: '' | 'fingerings'='') {
     let [preferences,] = usePreferencesState();
 
     let [dialogState, setDialogState] = useDialogState();
@@ -743,4 +743,4 @@ function TraditionalRender(score: Score, width: number, xml: MusicXML.ScoreTimew
     );
 }
 
-export default TraditionalRender;
+export default Traditional;
