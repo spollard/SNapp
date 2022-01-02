@@ -9,7 +9,8 @@ import React, {createContext, useContext, useReducer, useRef} from "react";
 //~ console.log("NOtations", Object.keys(Notations))
 //~ export const notationOptions = Object.keys(Notations) as (keyof typeof Notations)[];
 
-// Add the name of your notation here
+// Add the name of your notation here. Must be the same name as the file in ../notations
+// and as the function expored by your file.
 export const notationOptions = ["Traditional", "Simplified", "Solfege"] as const;
 export type notationOption = (typeof notationOptions)[number];
 
