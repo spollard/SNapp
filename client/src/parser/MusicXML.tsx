@@ -35,7 +35,7 @@ export const parse = (xml: MusicXML.ScoreTimewise): Score => {
     let lyricsPartId = getLyricsPartID(xml);
     let pianoPartId = getPianoPartID(xml);
 
-    // currently, SNApp renders piano and lyric parts. We store the ids of the tracks we have to parse below.
+    // currently, UNApp renders piano and lyric parts. We store the ids of the tracks we have to parse below.
     let tempo: number | undefined;
 
     let currentBeatType = 4;

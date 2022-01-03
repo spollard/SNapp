@@ -289,12 +289,12 @@ const Menu: React.FC<Props> = () => {
     };
 
     return (
-        <Frame header="SNapp -&nbsp;Simplified&nbsp;Notation&nbsp;App&nbsp;for&nbsp;Sheet&nbsp;Music">
+        <Frame header="UNapp -&nbsp;Unified&nbsp;Notation&nbsp;App&nbsp;for&nbsp;Sheet&nbsp;Music">
             {recentFiles === undefined ? null : <div style={styles.container}>
                 <div style={{ ...styles.item, flex: '.37 0 auto' }} />
                 <div style={{ ...styles.item, maxWidth: '1200px' }}>
-                    SNapp implements a simple and intuitive music notation known as What You See Is What You Play,
-                    or WYSIWYP. With it, musicians can spend less time learning to read music and more time playing it!
+                    UNapp implements a multiple music notations including Traditional and What You See Is What You Play,
+                    or WYSIWYP. With it, musicians can spend less time learning to read music and more time playing it with any notation they want!
                 </div>
                 {recentFiles.length === 0 ? <>
                     <div style={{ ...styles.item, flex: '.2 0 auto' }} />
@@ -336,7 +336,7 @@ const Menu: React.FC<Props> = () => {
                 {installHandle===undefined?null:<>
                     <div style={{ ...styles.item, flex: '.5 0 auto' }} />
                     <div style={{ ...styles.item, maxWidth: '720px' }}>
-                        Click the button below to add SNapp to your device's home screen.
+                        Click the button below to add UNapp to your device's home screen.
                     </div>
                     <div style={{ ...styles.item, flex: '.07 0 auto' }} />
                     <div style={styles.item}>
