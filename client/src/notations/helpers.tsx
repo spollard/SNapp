@@ -5,7 +5,6 @@ import { keySignatureNamesArrayMajor, keySignatureNamesArrayMinor,
     verticalPadding,
     } from './common_vars'
 
-let creditsDisplay = ['', '', '', '', ''];
 
 // This wrapper pulls out the title and credits from the XML document, then passes
 // on control to the wrapped notation function.
@@ -19,40 +18,11 @@ export function Wrapper(score: Score, width: number, xml: MusicXML.ScoreTimewise
     let title = 'no title specified';
     try {
         title = xml.movementTitle;
-        console.log("Title:" + title);
         title = xml.work.workTitle;
     } catch (e) { }
     if (title === undefined) title = 'no title specified';
-    console.log("Title:" + title);
 
-    let findCredits = (): number => {
-        // retrieve all credits but skip any that match the previously found title
-        console.log("Credits display:" + creditsDisplay);
-        let creditNum = 0;
-        creditsDisplay = ['', '', '', '', ''];
-        if (xml.credits !== undefined) {
-            let credits = xml.credits.filter(x => x.creditWords !== undefined && x.creditWords.length > 0).map(x => x.creditWords);
-            credits.forEach(credit => {
-                credit.forEach(words => {
-                    creditsDisplay[creditNum] = words.words;
-                    //}
-                    console.log("creditNum, creditsDisplay, words, title ", creditNum, creditsDisplay, words, title);
-                    if (creditsDisplay[creditNum] === title) {
-                        creditsDisplay[creditNum] = '';
-                    }
-                    else {
-                        creditNum = creditNum + 1;
-                    };
-                    console.log("title, creditNum, creditsDisplay", title, creditNum, creditsDisplay);
-                });
-            });
-
-        }
-        return creditNum;
-    };
-
-    let numberOfCredits = findCredits();
-    console.log("creditsDisplay, numberOfCredits", creditsDisplay, numberOfCredits);
+    let credits = findCredits(xml, title);
 
     // get key signature     21 June 2021  modified logic (don't examine title for "minor" anymore; display both Major/minor if mode parm not specified)
     let keyFifths = score.tracks[0].keySignatures[0].fifths;
@@ -66,18 +36,31 @@ export function Wrapper(score: Score, width: number, xml: MusicXML.ScoreTimewise
             <div className={'snview-row snview-row-0'} style={{ textAlign: 'center' }}>
                 <h1>{title}</h1>
                 <div>
-                    {score.tempo ? `${score.tempo} bpm` : null} {keySignatureDisplayed}
+                    {score.tempo && `${score.tempo} bpm`} {keySignatureDisplayed}
                 </div>
-                <div>
-                    <div>{creditsDisplay[0]}</div>
-                    <div>{creditsDisplay[1]}</div>
-                    <div>{creditsDisplay[2]}</div>
-                </div>
+                {credits.forEach(c => <div>{c}</div>)}
             </div>
             {wrapped(score, width, editMode)}
         </div>
     );
 }
+
+export function findCredits(xml: MusicXML.ScoreTimewise, title:string): string[] {
+    // retrieve all credits but skip any that match the previously found title
+    let credits = [];
+    if (xml.credits !== undefined) {
+        let xcredits = xml.credits.filter(x => x.creditWords !== undefined && x.creditWords.length > 0).map(x => x.creditWords);
+        xcredits.forEach(credit => {
+            credit.forEach(words => {
+                if (words.words != title) {
+                    credits.push(words.words)
+                }
+            });
+        });
+
+    }
+    return credits;
+};
 
 // This wrapper allows you to return a simple HTML string with the rendered
 // notation, rather than JSX.
