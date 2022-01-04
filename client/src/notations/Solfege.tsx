@@ -1,67 +1,28 @@
-import React, {useRef} from 'react';
+import React from 'react';
 import {range} from '../util/Util';
 // import {Note} from '@tonejs/midi/dist/Note';
 import MusicXML from 'musicxml-interfaces';
 import {Note, Score, TimeSignature, KeySignature, StaffType} from '../parser/Types';
-import { colorPreferenceStyles, usePreferencesState, spacingPreferenceOption,
-  scalePreferenceOption, lyricsFontSizeOption} from '../contexts/Preferences';
+import { colorPreferenceStyles, usePreferencesState,
+  lyricsFontSizeOption} from '../contexts/Preferences';
 import {useDialogState} from '../contexts/Dialog';
 import * as Dialog from '../util/Dialog';
-
-
-
-type Wedge = {
-    startMeasure: number,
-    startTime: number,
-    continuesFromLastRow: boolean,
-    type: 'crescendo' | 'diminuendo'
-} | undefined;
-
-enum Accidental {
-    Flat = -1,
-    Natural = 0,
-    Sharp = 1
-}
-
-const keySignatureNamesArrayMajor = [
-    'Cb Major',  // -7
-    'Gb Major',  // -6
-    'Db Major',  // -5
-    'Ab Major',  // -4
-    'Eb Major',  // -3
-    'Bb Major',  // -2
-    'F Major',   // -1
-    'C Major',   //  0
-    'G Major',   //  1
-    'D Major',   //  2
-    'A Major',   //  3
-    'E Major',   //  4
-    'B Major',   //  5
-    'F# Major',  //  6
-    'C# Major'   //  7
-];
-const keySignatureNamesArrayMinor = [
-    'g# minor', // -7
-    'eb minor', // -6
-    'bb minor', // -5
-    'f minor',  // -4
-    'c minor',  // -3
-    'g minor',  // -2
-    'd minor',  // -1
-    'a minor',  //  0
-    'e minor',  //  1
-    'b minor',  //  2
-    'f# minor', //  3
-    'c# minor', //  4
-    'g# minor', //  5
-    'd# minor', //  6
-    'bb minor'  //  7
-];
-
-let creditsDisplay = ['', '', '', '', ''];
+import { Wedge, Accidental, keySignatureNamesArrayMajor, keySignatureNamesArrayMinor,
+    noteScaleMap, staffScaleMap, verticalSpacingMap, horizontalSpacingMap,
+    strokeWidth, tickSize, measureLabelSpace, octaveLabelSpace,
+    accidentalMap, noteMap,
+    } from './common_vars'
+import { Wrapper } from './helpers'
 
 
 function Solfege(score: Score, width: number, xml: MusicXML.ScoreTimewise, ref: any, editMode: '' | 'fingerings'='') {
+    // This wrapper uses the XML and ref variables and displays the title and
+    // key signature, so the SolfegeNotationRenderer doesn't have to.
+    return Wrapper(score, width, xml, ref, editMode, SolfegeNotationRenderer)
+}
+
+function SolfegeNotationRenderer(score: Score, width: number, editMode: '' | 'fingerings'='') {
+
     let [preferences,] = usePreferencesState();
 
     let [dialogState, setDialogState] = useDialogState();
@@ -82,50 +43,18 @@ function Solfege(score: Score, width: number, xml: MusicXML.ScoreTimewise, ref: 
         accidentalType
     } = preferences;
 
-    // Map preference strings to numeric values     21 June 2021 made all smaller
-    let noteScaleMap: Record<scalePreferenceOption, number> = {
-        small: 9,
-        medium: 15,
-        large: 22
-    };
-    let staffScaleMap: Record<scalePreferenceOption, number> = {
-        small: 18,
-        medium: 25,
-        large: 32
-    };
-    let verticalSpacingMap: Record<spacingPreferenceOption, number> = {
-        narrow: 10,
-        moderate: 30,
-        wide: 50
-    };
-    // 2020 08 31: changed values from 20, 40, 60
-    let horizontalSpacingMap: Record<spacingPreferenceOption, number> = {
-        narrow: 20,
-        moderate: 60,
-        wide: 100
-    };
 
+    // COPY ALL THE VARIABLES AT the beginning of solfege staff element
     //general spacing
     let noteSymbolSize = noteScaleMap[noteScale]; //width/height of note symbols
-    let strokeWidth = 2;
-    let tickSize = 7;
 
-    // Map lyrics font size preference to numeric values
-    let lyricsFontSizeMap: Record<lyricsFontSizeOption, number> = {
-        small: noteSymbolSize * 4 / 7,
-        medium: noteSymbolSize * 5 / 7,
-        large: noteSymbolSize * 6 / 7
-    }
 
     //vertical spacing
-    let verticalPadding = 30; //top/bottom padding
     let rowPadding = verticalSpacingMap[verticalSpacing]; //space between rows
-    let measureLabelSpace = 15; //space for measure labels
 
     //horizontal spacing
     let horizontalPadding = horizontalSpacingMap[horizontalSpacing]; //left/right padding
     let staffLabelSpace = staffScaleMap[staffScale]; //space for staff labels
-    let octaveLabelSpace = measureLabelSpace; //space for octave labels
     // let tieExtensionSpace = measureLabelSpace;
 
     // composite horizontal spacing
@@ -135,15 +64,14 @@ function Solfege(score: Score, width: number, xml: MusicXML.ScoreTimewise, ref: 
     // let octaveGroups = [1, 1, 0, 0, 0, 1, 1]; //octaveGroups (C D E / F G A B)
     let staffLabels = preferences.clefSymbols === 'WYSIWYP' ? ['𝒯', 'ℬ'] : ['𝄞', '𝄢']; //𝄢
     let octaveLines = [
-        { color: 'blue', number: true }, undefined, undefined, /* C, D, E */
-        { color: 'blue' }, undefined, undefined, undefined, /* F, G, A, B */
+        { color: 'black', number: true , width:2}, undefined, { color: 'black' }, /* C, D, E */
+         undefined, { color: 'black' }, undefined, undefined, /* F, G, A, B */
     ];
-    let accidentalMap = [0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0].map(x => x === 1); // C, C#, D, D#, E, ...
-    let noteMap = [0, 0, 1, 1, 2, 3, 3, 4, 4, 5, 5, 6];
 
     let getNoteAccidental = (note: number): Accidental => {
         return accidentalMap[note % 12] ? (keyFifths >= 0 ? Accidental.Sharp : Accidental.Flat) : Accidental.Natural;
     };
+
 
     // We map C0 (midi note 12) to line 0.
     let getNoteLine = (note: number) => {
@@ -156,49 +84,13 @@ function Solfege(score: Score, width: number, xml: MusicXML.ScoreTimewise, ref: 
         return line;
     };
 
-    // find the title and author
-    let title = 'no title specified';
-    try {
-        title = xml.movementTitle;
-        console.log("Title:" + title);
-        title = xml.work.workTitle;
-    } catch (e) { }
-    if (title === undefined) title = 'no title specified';
-    console.log("Title:" + title);
-
-    let findCredits = (): number => {
-        // retrieve all credits but skip any that match the previously found title
-        console.log("Credits display:" + creditsDisplay);
-        let creditNum = 0;
-        creditsDisplay = ['', '', '', '', ''];
-        if (xml.credits !== undefined) {
-            let credits = xml.credits.filter(x => x.creditWords !== undefined && x.creditWords.length > 0).map(x => x.creditWords);
-            credits.forEach(credit => {
-                credit.forEach(words => {
-                    creditsDisplay[creditNum] = words.words;
-                    //}
-                    console.log("creditNum, creditsDisplay, words, title ", creditNum, creditsDisplay, words, title);
-                    if (creditsDisplay[creditNum] === title) {
-                        creditsDisplay[creditNum] = '';
-                    }
-                    else {
-                        creditNum = creditNum + 1;
-                    };
-                    console.log("title, creditNum, creditsDisplay", title, creditNum, creditsDisplay);
-                });
-            });
-
-        }
-        return creditNum;
-    };
-
-    let numberOfCredits = findCredits();
-    console.log("creditsDisplay, numberOfCredits", creditsDisplay, numberOfCredits);
 
     // get key signature     21 June 2021  modified logic (don't examine title for "minor" anymore; display both Major/minor if mode parm not specified)
     let keyFifths = score.tracks[0].keySignatures[0].fifths;
     // The values for fifths range from -7 for Cb Major to +7 for C# Major.  So adjust index to names array by 7 to start at array offset 0
     let keySignatureDisplayed = keySignatureNamesArrayMajor[keyFifths + 7] + " / " + keySignatureNamesArrayMinor[keyFifths + 7];  // if no mode, default to major and indicate that with an asterisk
+
+
     let scoreMode: any = score.tracks[0].keySignatures[0].mode;
     // According to MusicXML website, the modes are all lowercase
     if (scoreMode === 'major') keySignatureDisplayed = keySignatureNamesArrayMajor[keyFifths + 7];
@@ -386,6 +278,13 @@ function Solfege(score: Score, width: number, xml: MusicXML.ScoreTimewise, ref: 
     let staffBreak = (i: number): JSX.Element | null => {
         // general spacing
         let textSize = noteSymbolSize * 6 / 7;
+
+        let lyricsFontSizeMap: Record<lyricsFontSizeOption, number> = {
+            small: noteSymbolSize * 4 / 7,
+            medium: noteSymbolSize * 5 / 7,
+            large: noteSymbolSize * 6 / 7
+        }
+
         let lyricsFontSize = lyricsFontSizeMap[preferences.lyricsFontSize];
 
         // vertical spacing
@@ -535,7 +434,7 @@ function Solfege(score: Score, width: number, xml: MusicXML.ScoreTimewise, ref: 
             let octaveLine = octaveLines[j % 7];
             if (octaveLine !== undefined) {
                 let lineY = measureLabelSpace + staffHeights[staff] - (j - minLine[staff]) * noteSymbolSize / 2;
-                measureSVG.push(<rect key={key++} x={strokeWidth / 2} y={lineY - strokeWidth / 2} width={measureWidth - strokeWidth} height={strokeWidth} fill={octaveLine.color} />);
+                measureSVG.push(<rect key={key++} x={strokeWidth / 2} y={lineY - strokeWidth / 2} width={measureWidth - strokeWidth } height={strokeWidth + (octaveLine.width! || 0)} fill={octaveLine.color} />);
                 if (measureNumber % measuresPerRow === 0 && octaveLine.number === true) {
                     measureSVG.push(<text x={-strokeWidth} key={key++} y={lineY} fontSize={measureLabelSpace} textAnchor="end" dominantBaseline="middle">{Math.floor(j / 7)}</text>);
                 }
@@ -673,41 +572,7 @@ function Solfege(score: Score, width: number, xml: MusicXML.ScoreTimewise, ref: 
             }
         };
 
-        let notehead: any;
-        switch (shape) {
-            case '●':
-                notehead = <circle cx={x} cy={y} r={noteSymbolSize / 2} fill={colorPreferenceStyles[noteSymbolColor]} />;
-                break;
-            case '▲':
-                notehead = <polygon points={`${x},${y - triHeight / 2} ${x + noteSymbolSize / 2},${y + triHeight / 2} ${x - noteSymbolSize / 2},${y + triHeight / 2}`} fill={colorPreferenceStyles[noteSymbolColor]} />;
-                break;
-            case '▼':
-                notehead = <polygon points={`${x},${y + triHeight / 2} ${x + noteSymbolSize / 2},${y - triHeight / 2} ${x - noteSymbolSize / 2},${y - triHeight / 2}`} fill={colorPreferenceStyles[noteSymbolColor]} />;
-                break;
-            case '○':
-                notehead = <circle cx={x} cy={y} r={(noteSymbolSize - strokeWidth) / 2} strokeWidth={strokeWidth} stroke={colorPreferenceStyles[noteSymbolColor]} fill='none' />;
-                break;
-            case '△':
-                notehead = <polygon points={`${x},${y - triHeight / 2 + strokeWidth} ${x + noteSymbolSize / 2 - Math.sqrt(3) * strokeWidth / 2},${y + triHeight / 2 - strokeWidth / 2} ${x - noteSymbolSize / 2 + Math.sqrt(3) * strokeWidth / 2},${y + triHeight / 2 - strokeWidth / 2}`} stroke={colorPreferenceStyles[noteSymbolColor]} strokeWidth={strokeWidth} fill='none' />;
-                break;
-            case '▽':
-                notehead = <polygon points={`${x},${y + triHeight / 2 - strokeWidth} ${x + noteSymbolSize / 2 - Math.sqrt(3) * strokeWidth / 2},${y - triHeight / 2 + strokeWidth / 2} ${x - noteSymbolSize / 2 + Math.sqrt(3) * strokeWidth / 2},${y - triHeight / 2 + strokeWidth / 2}`} stroke={colorPreferenceStyles[noteSymbolColor]} strokeWidth={strokeWidth} fill='none' />;
-                break;
-            case '#':
-                notehead = (<g>
-                    <line x1={x - (noteSymbolSize / 2) + (noteSymbolSize / 3)} y1={y - (noteSymbolSize / 2)} x2={x - (noteSymbolSize / 2) + (noteSymbolSize / 3)} y2={y + (noteSymbolSize / 2)} stroke={colorPreferenceStyles[noteSymbolColor]} strokeWidth={strokeWidth} />
-                    <line x1={x - (noteSymbolSize / 2) + 2 * (noteSymbolSize / 3)} y1={y - (noteSymbolSize / 2)} x2={x - (noteSymbolSize / 2) + 2 * (noteSymbolSize / 3)} y2={y + (noteSymbolSize / 2)} stroke={colorPreferenceStyles[noteSymbolColor]} strokeWidth={strokeWidth} />
-                    <line x1={x - (noteSymbolSize / 2)} y1={y - (noteSymbolSize / 2) + (noteSymbolSize / 3)} x2={x + (noteSymbolSize / 2)} y2={y - (noteSymbolSize / 2) + (noteSymbolSize / 3)} stroke={colorPreferenceStyles[noteSymbolColor]} strokeWidth={strokeWidth} />
-                    <line x1={x - (noteSymbolSize / 2)} y1={y - (noteSymbolSize / 2) + 2 * (noteSymbolSize / 3)} x2={x + (noteSymbolSize / 2)} y2={y - (noteSymbolSize / 2) + 2 * (noteSymbolSize / 3)} stroke={colorPreferenceStyles[noteSymbolColor]} strokeWidth={strokeWidth} />;
-                </g>);
-                break;
-            case 'b':
-                notehead = (<g>
-                    <line x1={x - 0.6 * (noteSymbolSize / 2)} y1={y - (noteSymbolSize / 2)} x2={x - 0.6 * (noteSymbolSize / 2)} y2={y + 0.7 * (noteSymbolSize / 2)} stroke={colorPreferenceStyles[noteSymbolColor]} strokeWidth={strokeWidth} />
-                    <ellipse cx={x - (noteSymbolSize / 2) + 1.2 * (noteSymbolSize / 3)} cy={y - (noteSymbolSize / 2) + 2 * (noteSymbolSize / 3)} rx={(noteSymbolSize - strokeWidth) / 4} ry={(noteSymbolSize - strokeWidth) / 3} strokeWidth={strokeWidth} stroke={colorPreferenceStyles[noteSymbolColor]} fill='none' />
-                </g>);
-                break;
-        }
+        let notehead = <circle cx={x} cy={y} r={noteSymbolSize / 2} fill={colorPreferenceStyles[noteSymbolColor]} />;
 
         return <g onClick={callback} key={i}>
             // stuart-change 3/13/2020  5pm
@@ -715,31 +580,9 @@ function Solfege(score: Score, width: number, xml: MusicXML.ScoreTimewise, ref: 
             {notehead}
         </g>;
     };
-
-    let svgRows: JSX.Element[] = range(0, rowNumber).map(i => grandStaff(i));
-    let titleRowHeight = 80;
-    if (title === 'no title specified') title = '';
-    return (
-        <div id="snview" ref={ref} style={{ width: '100%', height: 'auto', overflow: 'hidden', minWidth: '350px', userSelect: 'text', paddingTop: verticalPadding, paddingBottom: verticalPadding }}>
-            <div className={`snview-row snview-row-0`} style={{ position: 'relative', height: 'auto' }}>
-                <div style={{ position: 'relative', height: 'auto' }}>
-
-                    <svg viewBox={`0 0 ${width} ${titleRowHeight}`}>
-                        <text x={width / 2} y={0} fontSize={40} textAnchor="middle" dominantBaseline="hanging">{title}</text>
-                        <text x={70} y={20} fontSize={25} textAnchor="start">{score.tempo ? `${score.tempo} bpm` : null}</text>
-                        <text x={width - 70} y={20} fontSize={25} textAnchor="end">{keySignatureDisplayed}</text>
-
-                        <text x={70} y={titleRowHeight - 10} fontSize={25} textAnchor="start">{creditsDisplay[0]}</text>
-                        <text x={width / 2} y={titleRowHeight - 10} fontSize={25} textAnchor="middle">{creditsDisplay[1]}</text>
-                        <text x={width - 70} y={titleRowHeight - 10} fontSize={25} textAnchor="end">{creditsDisplay[2]}</text>
-                    </svg>
-
-
-                </div>
-            </div>
-            {svgRows}
-        </div>
-    );
+    return range(0, rowNumber).map(i => grandStaff(i));
 }
+
+
 
 export default Solfege;

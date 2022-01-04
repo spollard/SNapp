@@ -1,6 +1,5 @@
 import React, {useEffect, useState, CSSProperties, Fragment} from 'react';
 import {RouteComponentProps, navigate} from "@reach/router";
-import SNView from '../components/SNView';
 import UNView from '../components/UNView';
 import Frame from '../components/Frame';
 import Expandable from '../components/Expandable';
@@ -47,7 +46,7 @@ const Convert: React.FC<Props> = () => {
         } else {
             let timeout = setTimeout(() => {
                 setShowMenuButtons(true);
-            }, 1000);
+            }, 0);
             return () => {
                 clearTimeout(timeout);
             };
@@ -232,16 +231,14 @@ const Convert: React.FC<Props> = () => {
 
                 </Fragment>:<Fragment key="preferences">
 
-                    <Expandable title="Notation">
 
-                        <div style={styles.line}>
-                            <div style={styles.name}>Notation</div>
-                            <select value={preferences.notation} onChange={
-                                (e) => {setPreferences({type: 'set', val: {notation: e.target.value as any}});}
-                            }>{notationOptions.map(x => <option key={x}>{x}</option>)}</select>
-                        </div>
+                    <div style={styles.line}>
+                        <div style={styles.name}>Music Notation</div>
+                        <select value={preferences.notation} onChange={
+                            (e) => {setPreferences({type: 'set', val: {notation: e.target.value as any}});}
+                        }>{notationOptions.map(x => <option key={x}>{x}</option>)}</select>
+                    </div>
 
-                    </Expandable>
                     <Expandable title="Staff Appearance">
 
                         <div style={styles.line}>
@@ -484,9 +481,7 @@ const styleMap = {
         opacity: 0,
     },
     sideBarContent: {
-        position: 'absolute',
         top: '65px',
-        height: 'calc(100% - 65px)',
         overflow: 'auto',
     },
     line: {

@@ -1,3 +1,6 @@
+// This could be updated to look more like the Solfege notation. That would
+// be cleaner... but it works for now.
+
 import React, {useRef} from 'react';
 import {range} from '../util/Util';
 // import {Note} from '@tonejs/midi/dist/Note';
@@ -7,56 +10,12 @@ import { colorPreferenceStyles, usePreferencesState, spacingPreferenceOption,
   scalePreferenceOption, lyricsFontSizeOption} from '../contexts/Preferences';
 import {useDialogState} from '../contexts/Dialog';
 import * as Dialog from '../util/Dialog';
+import { Wedge, Accidental, keySignatureNamesArrayMajor, keySignatureNamesArrayMinor,
+    noteScaleMap, staffScaleMap, verticalSpacingMap, horizontalSpacingMap, verticalPadding,
+    strokeWidth, tickSize, measureLabelSpace, octaveLabelSpace,
+    accidentalMap, noteMap, minNote, maxNote, staffTypes,
+    } from './common_vars'
 
-
-
-type Wedge = {
-    startMeasure: number,
-    startTime: number,
-    continuesFromLastRow: boolean,
-    type: 'crescendo' | 'diminuendo'
-} | undefined;
-
-enum Accidental {
-    Flat = -1,
-    Natural = 0,
-    Sharp = 1
-}
-
-const keySignatureNamesArrayMajor = [
-    'Cb Major',  // -7
-    'Gb Major',  // -6
-    'Db Major',  // -5
-    'Ab Major',  // -4
-    'Eb Major',  // -3
-    'Bb Major',  // -2
-    'F Major',   // -1
-    'C Major',   //  0
-    'G Major',   //  1
-    'D Major',   //  2
-    'A Major',   //  3
-    'E Major',   //  4
-    'B Major',   //  5
-    'F# Major',  //  6
-    'C# Major'   //  7
-];
-const keySignatureNamesArrayMinor = [
-    'g# minor', // -7
-    'eb minor', // -6
-    'bb minor', // -5
-    'f minor',  // -4
-    'c minor',  // -3
-    'g minor',  // -2
-    'd minor',  // -1
-    'a minor',  //  0
-    'e minor',  //  1
-    'b minor',  //  2
-    'f# minor', //  3
-    'c# minor', //  4
-    'g# minor', //  5
-    'd# minor', //  6
-    'bb minor'  //  7
-];
 
 let creditsDisplay = ['', '', '', '', ''];
 
@@ -82,33 +41,9 @@ function Simplified(score: Score, width: number, xml: MusicXML.ScoreTimewise, re
         accidentalType
     } = preferences;
 
-    // Map preference strings to numeric values     21 June 2021 made all smaller
-    let noteScaleMap: Record<scalePreferenceOption, number> = {
-        small: 9,
-        medium: 15,
-        large: 22
-    };
-    let staffScaleMap: Record<scalePreferenceOption, number> = {
-        small: 18,
-        medium: 25,
-        large: 32
-    };
-    let verticalSpacingMap: Record<spacingPreferenceOption, number> = {
-        narrow: 10,
-        moderate: 30,
-        wide: 50
-    };
-    // 2020 08 31: changed values from 20, 40, 60
-    let horizontalSpacingMap: Record<spacingPreferenceOption, number> = {
-        narrow: 20,
-        moderate: 60,
-        wide: 100
-    };
 
     //general spacing
     let noteSymbolSize = noteScaleMap[noteScale]; //width/height of note symbols
-    let strokeWidth = 2;
-    let tickSize = 7;
 
     // Map lyrics font size preference to numeric values
     let lyricsFontSizeMap: Record<lyricsFontSizeOption, number> = {
@@ -118,14 +53,11 @@ function Simplified(score: Score, width: number, xml: MusicXML.ScoreTimewise, re
     }
 
     //vertical spacing
-    let verticalPadding = 30; //top/bottom padding
     let rowPadding = verticalSpacingMap[verticalSpacing]; //space between rows
-    let measureLabelSpace = 15; //space for measure labels
 
     //horizontal spacing
     let horizontalPadding = horizontalSpacingMap[horizontalSpacing]; //left/right padding
     let staffLabelSpace = staffScaleMap[staffScale]; //space for staff labels
-    let octaveLabelSpace = measureLabelSpace; //space for octave labels
     // let tieExtensionSpace = measureLabelSpace;
 
     // composite horizontal spacing
@@ -138,8 +70,6 @@ function Simplified(score: Score, width: number, xml: MusicXML.ScoreTimewise, re
         { color: 'red', number: true }, undefined, undefined, /* C, D, E */
         { color: 'blue' }, undefined, undefined, undefined, /* F, G, A, B */
     ];
-    let accidentalMap = [0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0].map(x => x === 1); // C, C#, D, D#, E, ...
-    let noteMap = [0, 0, 1, 1, 2, 3, 3, 4, 4, 5, 5, 6];
 
     let getNoteAccidental = (note: number): Accidental => {
         return accidentalMap[note % 12] ? (keyFifths >= 0 ? Accidental.Sharp : Accidental.Flat) : Accidental.Natural;
