@@ -1,4 +1,4 @@
-// To add a new notation, copy the Simplified file, rename the file, rename
+// To add a new notation, copy the Solfege file, rename the file, rename
 // the exported variable, import it here, and add it to the list of notations here.
 
 // ALSO add it to the list of Notation options in ../context/preferences.tsx.

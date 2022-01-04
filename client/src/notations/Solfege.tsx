@@ -10,7 +10,7 @@ import * as Dialog from '../util/Dialog';
 import { Wedge, Accidental, keySignatureNamesArrayMajor, keySignatureNamesArrayMinor,
     noteScaleMap, staffScaleMap, verticalSpacingMap, horizontalSpacingMap,
     strokeWidth, tickSize, measureLabelSpace, octaveLabelSpace,
-    accidentalMap, noteMap,
+    accidentalMap, noteMap, minNote, maxNote, staffTypes
     } from './common_vars'
 import { Wrapper } from './helpers'
 
@@ -68,10 +68,14 @@ function SolfegeNotationRenderer(score: Score, width: number, editMode: '' | 'fi
          undefined, { color: 'black' }, undefined, undefined, /* F, G, A, B */
     ];
 
+    // get key signature     21 June 2021  modified logic (don't examine title for "minor" anymore; display both Major/minor if mode parm not specified)
+    let keyFifths = score.tracks[0].keySignatures[0].fifths;
+    // The values for fifths range from -7 for Cb Major to +7 for C# Major.  So adjust index to names array by 7 to start at array offset 0
+    let keySignatureDisplayed = keySignatureNamesArrayMajor[keyFifths + 7] + " / " + keySignatureNamesArrayMinor[keyFifths + 7];  // if no mode, default to major and indicate that with an asterisk
+
     let getNoteAccidental = (note: number): Accidental => {
         return accidentalMap[note % 12] ? (keyFifths >= 0 ? Accidental.Sharp : Accidental.Flat) : Accidental.Natural;
     };
-
 
     // We map C0 (midi note 12) to line 0.
     let getNoteLine = (note: number) => {
@@ -85,26 +89,12 @@ function SolfegeNotationRenderer(score: Score, width: number, editMode: '' | 'fi
     };
 
 
-    // get key signature     21 June 2021  modified logic (don't examine title for "minor" anymore; display both Major/minor if mode parm not specified)
-    let keyFifths = score.tracks[0].keySignatures[0].fifths;
-    // The values for fifths range from -7 for Cb Major to +7 for C# Major.  So adjust index to names array by 7 to start at array offset 0
-    let keySignatureDisplayed = keySignatureNamesArrayMajor[keyFifths + 7] + " / " + keySignatureNamesArrayMinor[keyFifths + 7];  // if no mode, default to major and indicate that with an asterisk
-
-
     let scoreMode: any = score.tracks[0].keySignatures[0].mode;
     // According to MusicXML website, the modes are all lowercase
     if (scoreMode === 'major') keySignatureDisplayed = keySignatureNamesArrayMajor[keyFifths + 7];
     else if (scoreMode === 'minor') keySignatureDisplayed = keySignatureNamesArrayMinor[keyFifths + 7];
 
 
-    let minNote: Record<StaffType, number> = {
-        treble: 128,
-        bass: 128
-    };
-    let maxNote: Record<StaffType, number> = {
-        treble: -1,
-        bass: -1
-    };
 
     //calculate lowest and highest note
     let instrumentTrack = score.tracks.filter(track => track.trackTypes.includes('instrument'))[0];
@@ -115,7 +105,6 @@ function SolfegeNotationRenderer(score: Score, width: number, editMode: '' | 'fi
         });
     });
 
-    let staffTypes: StaffType[] = ['treble', 'bass'];
 
     // if bass clef is empty, then we create an empty clef
     let bassClefIsEmpty = false;
@@ -572,13 +561,12 @@ function SolfegeNotationRenderer(score: Score, width: number, editMode: '' | 'fi
             }
         };
 
-        let notehead = <circle cx={x} cy={y} r={noteSymbolSize / 2} fill={colorPreferenceStyles[noteSymbolColor]} />;
 
         return <g onClick={callback} key={i}>
             // stuart-change 3/13/2020  5pm
             <text x={x} y={y} fontSize={14} textAnchor="middle" dominantBaseline="middle">{note.fingering}</text>
-            {notehead}
-        </g>;
+            <circle cx={x} cy={y} r={noteSymbolSize / 2} fill={colorPreferenceStyles[noteSymbolColor]} />
+            </g>;
     };
     return range(0, rowNumber).map(i => grandStaff(i));
 }
