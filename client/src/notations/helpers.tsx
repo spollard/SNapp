@@ -10,6 +10,7 @@ let creditsDisplay = ['', '', '', '', ''];
 // This wrapper pulls out the title and credits from the XML document, then passes
 // on control to the wrapped notation function.
 
+
 // This wrapper removes the xml and ref argument requirements, so that the
 // musical notation function can have a smaller interface.
 export function Wrapper(score: Score, width: number, xml: MusicXML.ScoreTimewise, ref: any, editMode: '' | 'fingerings'='', wrapped: Function) {
@@ -77,3 +78,22 @@ export function Wrapper(score: Score, width: number, xml: MusicXML.ScoreTimewise
         </div>
     );
 }
+
+// This wrapper allows you to return a simple HTML string with the rendered
+// notation, rather than JSX.
+// Use it like this
+//    return SimpleHTMLWrapper(score, width, editMode, FUNCTION_THAT_RETURNS_A_STRING)
+// Note the FUNCTION_THAT_RETURNS_A_STRING must take the arguments score, width, and editMode.
+export function SimpleHTMLWrapper(score: Score, width: number, xml: MusicXML.ScoreTimewise, ref: any,editMode: '' | 'fingerings'='', wrapped: Function) {
+    return Wrapper(score, width, xml, ref, editMode,
+        (score: Score, width: number, editMode: '' | 'fingerings'='') => {
+            return (
+                <div>
+                    <div dangerouslySetInnerHTML={{ __html: wrapped(score, width, editMode) }} />
+                </div>
+            );
+        }
+    )
+}
+
+
