@@ -47,7 +47,7 @@ export function Wrapper(score: Score, width: number, xml: MusicXML.ScoreTimewise
 
 export function findCredits(xml: MusicXML.ScoreTimewise, title:string): string[] {
     // retrieve all credits but skip any that match the previously found title
-    let credits = [];
+    let credits: string[] = [];
     if (xml.credits !== undefined) {
         let xcredits = xml.credits.filter(x => x.creditWords !== undefined && x.creditWords.length > 0).map(x => x.creditWords);
         xcredits.forEach(credit => {
