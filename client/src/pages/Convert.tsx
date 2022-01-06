@@ -198,7 +198,7 @@ const Convert: React.FC<Props> = () => {
         <div style={styles.sideBar}>
             <div style={styles.sideBarTop}>
                 {menuType==='edit'?<>
-                    <div style={{position: 'relative', width: '60%', height: 'auto'}} />
+                    <div style={{position: 'relative', width: '60%'}} />
                 </>:<>
                     <div id="export" title="Click to save your preferences" style={styles.sideBarTopOptions} onClick={() => {exportSettings();}}>
                         Save
@@ -414,7 +414,6 @@ const styleMap = {
     left: {
         display: 'flex',
         alignItems: 'center',
-        height: 'auto',
         color: '#31B7D6',
         marginTop: '15px',
         marginLeft: '25px',
@@ -428,7 +427,6 @@ const styleMap = {
     right: {
         display: 'flex',
         alignItems: 'center',
-        height: 'auto',
         marginTop: '15px',
         fontWeight: 'bold',
         color: '#31B7D6',
@@ -436,7 +434,6 @@ const styleMap = {
         marginRight: '25px',
         position: 'relative',
         float: 'right',
-        width: 'auto',
         cursor: 'pointer',
     },
 
@@ -444,9 +441,9 @@ const styleMap = {
         height: '65px',
     },
     SNView: {
-        top: '65px',
-        height: 'calc(100% - 65px)',
-        overflow: 'auto',
+        //~ top: '65px',
+        //~ height: 'calc(100% - 65px)',
+        //~ overflow: 'auto',
     },
     sideBar: {
         color: 'white',
@@ -465,7 +462,6 @@ const styleMap = {
     sideBarTopOptions: {
         position: 'relative',
         width: '33%',
-        height: 'auto',
         whiteSpace: 'nowrap',
         textAlign: 'center',
         cursor: 'pointer',
@@ -482,7 +478,7 @@ const styleMap = {
     },
     sideBarContent: {
         top: '65px',
-        overflow: 'auto',
+        //~ overflow: 'auto',
     },
     line: {
         marginTop: '30px',
@@ -491,7 +487,6 @@ const styleMap = {
         alignItems: 'baseline',
         display: 'flex',
         position: 'relative',
-        height: 'auto',
         width: '100%'
     },
     name: {
@@ -500,13 +495,13 @@ const styleMap = {
         display: 'inline-block'
     },
     hidden: {
-        width: '0px',
-        height: '0px',
-        overflow: 'hidden',
-        opacity: .01,
+        display: 'none'
+        //~ width: '0px',
+        //~ height: '0px',
+        //~ overflow: 'hidden',
+        //~ opacity: .01,
     },
     button: {
-        width: 'auto',
         height: '40px',
         lineHeight: '40px',
         marginLeft: '40px',

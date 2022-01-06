@@ -32,7 +32,7 @@ export function Wrapper(score: Score, width: number, xml: MusicXML.ScoreTimewise
     let titleRowHeight = 80;
     if (title === 'no title specified') title = '';
     return (
-        <div id="snview" ref={ref} style={{ width: '100%', height: 'auto', overflow: 'hidden', minWidth: '350px', userSelect: 'text', paddingTop: verticalPadding, paddingBottom: verticalPadding }}>
+        <div id="snview" ref={ref} style={{ userSelect: 'text', padding: verticalPadding }}>
             <div className={'snview-row snview-row-0'} style={{ textAlign: 'center' }}>
                 <h1>{title}</h1>
                 <div>

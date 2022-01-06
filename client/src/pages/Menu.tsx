@@ -289,7 +289,7 @@ const Menu: React.FC<Props> = () => {
     };
 
     return (
-        <Frame header="UNapp -&nbsp;Unified&nbsp;Notation&nbsp;App&nbsp;for&nbsp;Sheet&nbsp;Music">
+        <Frame header="UNapp -&nbsp;Universal&nbsp;Notation&nbsp;App&nbsp;for&nbsp;Sheet&nbsp;Music">
             {recentFiles === undefined ? null : <div style={styles.container}>
                 <div style={{ ...styles.item, flex: '.37 0 auto' }} />
                 <div style={{ ...styles.item, maxWidth: '1200px' }}>
@@ -362,7 +362,7 @@ const styleMap = {
     container: {
         display: 'flex',
         flexDirection: 'column',
-        overflow: 'hidden',
+        //~ overflow: 'hidden',
     },
     item: {
         //~ position: 'initial',
