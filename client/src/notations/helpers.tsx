@@ -65,7 +65,7 @@ export function findCredits(xml: MusicXML.ScoreTimewise, title:string): string[]
 // This wrapper allows you to return a simple HTML string with the rendered
 // notation, rather than JSX.
 // Use it like this
-//    return SimpleHTMLWrapper(score, width, editMode, FUNCTION_THAT_RETURNS_A_STRING)
+//    return SimpleHTMLWrapper(score, width, xml, ref, editMode, FUNCTION_THAT_RETURNS_A_STRING)
 // Note the FUNCTION_THAT_RETURNS_A_STRING must take the arguments score, width, and editMode.
 export function SimpleHTMLWrapper(score: Score, width: number, xml: MusicXML.ScoreTimewise, ref: any,editMode: '' | 'fingerings'='', wrapped: Function) {
     return Wrapper(score, width, xml, ref, editMode,

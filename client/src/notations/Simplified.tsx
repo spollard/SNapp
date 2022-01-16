@@ -482,7 +482,7 @@ function Simplified(score: Score, width: number, xml: MusicXML.ScoreTimewise, re
         const noteHeadSVG: JSX.Element[] = [];
         const noteTailSVG: JSX.Element[] = [];
         score!.tracks.forEach(track => {
-            if (!track.trackTypes.includes('instrument')) return; // we do not render notes for lyrics only track.
+            //~ if (!track.trackTypes.includes('instrument')) return; // we do not render notes for lyrics only track.
             let notes = track.measures[measureNumber].filter(note => note.staff === staff);
             notes.forEach((note, _idx) => {
                 noteHeadSVG.push(noteHead(note, key++, staff));

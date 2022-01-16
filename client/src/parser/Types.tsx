@@ -60,12 +60,17 @@ export type KeySignature = {
 
 // Tracks and scores
 export type Track = {
+    id: string,
     measures: Notes[],
     directions: Directions[]
     timeSignatures: TimeSignature[],
     keySignatures: KeySignature[],
     trackTypes: TrackType[], // we use an array here because a track might contain both lyrics and piano part.
-    bassStaffOnly?: boolean // whether the piece only has a bass staff
+    bassStaffOnly?: boolean, // whether the piece only has a bass staff
+    minNote: number,
+    maxNote: number,
+    minLine: number,
+    maxLine: number,
 };
 
 export type Tracks = Track[];

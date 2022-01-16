@@ -78,8 +78,8 @@ export type action = {
 };
 
 let initialState: state = {
-    //~ notation: "Solfege",
-    notation: "Traditional",
+    notation: "Solfege",
+    //~ notation: "Traditional",
     noteDurationColor: "grey",
     noteSymbolColor: "black",
     staffScale: 'medium',

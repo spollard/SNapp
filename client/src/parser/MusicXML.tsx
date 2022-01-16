@@ -16,6 +16,19 @@ const getPianoPartID = (xml: MusicXML.ScoreTimewise): string | undefined => {
     const pianoPart = xml.partList.find(part => isScorePart(part) && part.partName.partName.toLowerCase() === 'piano');
     return pianoPart ? (pianoPart as MusicXML.ScorePart).id : undefined;
 };
+// get all part names from xml
+const getAllPartIDs = (xml: MusicXML.ScoreTimewise): string[]  => {
+    var parts : string[] = []
+    xml.partList.forEach(part => {
+        console.log("Part or part group", part)
+        if ('id' in part) {
+        //~ if (part is MusicXML.ScorePart) {
+            parts.push(part.id)
+        }
+        //~ return part.partName.partName.toLowerCase() || undefined
+    });
+    return parts
+};
 
 const getLyricsPartID = (xml: MusicXML.ScoreTimewise): string | undefined => {
     let lyricsPartId: string | undefined;
@@ -54,21 +67,24 @@ export const parse = (xml: MusicXML.ScoreTimewise): Score => {
     /**
      * Multitrack Handling Logic
      *
-     * We parse:
+     * We parse: ALL THE PARTS NOW
+     * Used to parse only:
      *      1) just the instrument part from a two part work for instrument and vocal
      *      2) just the piano part from a work with multiple instrument parts
      *      3) just one instrument part from a work with multiple instruments and none of them are piano
      */
 
-    // parts that we want to parse. We may add more ids here if we decide to render more instruments parts.
-    let trackIDsToParse: string[] = [];
-
     let instrumentId = pianoPartId !== undefined ? pianoPartId : 'P1';
-    trackIDsToParse.push(instrumentId);
-    if (lyricsPartId !== undefined && !trackIDsToParse.includes(lyricsPartId)) {
-        trackIDsToParse.push(lyricsPartId);
-    }
 
+    // parts that we want to parse. We may add more ids here if we decide to render more instruments parts.
+    //~ let trackIDsToParse: string[] = [];
+    //~ trackIDsToParse.push(instrumentId);
+    //~ if (lyricsPartId !== undefined && !trackIDsToParse.includes(lyricsPartId)) {
+        //~ trackIDsToParse.push(lyricsPartId);
+    //~ }
+    //~ console.log("Parsing P2 as well!!!!")
+    //~ trackIDsToParse.push("P2");
+    let trackIDsToParse = getAllPartIDs(xml);
     xml.measures.forEach((measure, measureNumber) => {
         trackIDsToParse.forEach(partName => {
             if (measure.parts[partName] === undefined) return; // if part has not started yet, skip this measure.
@@ -340,5 +356,6 @@ export const parse = (xml: MusicXML.ScoreTimewise): Score => {
             }
         }
     });
+    console.log("tracks",tracks)
     return {tracks, tempo};
 };

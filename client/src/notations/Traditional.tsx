@@ -20,7 +20,6 @@ function Traditional(score: Score, width: number, xml: MusicXML.ScoreTimewise, r
     // key signature, so the TraditionalNotationRenderer doesn't have to.
     //~ return Wrapper(score, width, xml, ref, editMode, TraditionalNotationRenderer)
     return SimpleHTMLWrapper(score, width, xml, ref, editMode, HTMLWrapped)
-    //~ return Wrapper(score, width, xml, ref, editMode, (score: Score, width: number, editMode: '' | 'fingerings'='') => {SimpleHTMLWrapper(score, width, editMode, () => "hi")})
 }
 
 function HTMLWrapped(score: Score, width: number, editMode: '' | 'fingerings'='') {
